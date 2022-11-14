@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const sprintf = require('sprintf-js').sprintf;
 
-var counter = 0;
+//var counter = 0;
 
 // Private helper functions ////////////////////////////////////////////////////
 
@@ -38,13 +38,60 @@ const writeCounter = (count, callback) => {
 
 // Public API - Fix this function //////////////////////////////////////////////
 
-exports.getNextUniqueId = () => {
-  counter = counter + 1;
-  return zeroPaddedNumber(counter);
+// rewrite getNextUniqueId, make use of readCounter and writeCounter
+
+exports.getNextUniqueId = (callback) => {
+  // check if a counter exists, if it does, read from file and get current counter
+  readCounter((err, result) => {
+    // if it does not exist, write counter set to 1
+      writeCounter(result + 1, (err, counterString) => {
+          callback(err, counterString);
+      })
+  })
 };
-
-
 
 // Configuration -- DO NOT MODIFY //////////////////////////////////////////////
 
 exports.counterFile = path.join(__dirname, 'counter.txt');
+
+
+
+
+/*
+if (fs.readFile('/counter.txt', 'utf8', (err, data) => {
+    // if it does not exist, write counter set to 1
+    if (err) {
+      throw err;
+      fs.writeFile('/counter.txt', 1);
+      counter = 0;
+    } else {
+      // write a new file with counter + 1
+      counter = data;
+      fs.writeFile('/counter.txt', data + 1);
+    }
+  }))
+  console.log(counter);
+  return zeroPaddedNumber(counter);
+
+
+  let counter = 0;
+  // check if a counter exists, if it does, read from file and get current counter
+  try {
+    fs.readFile('/counter.txt', 'utf8', (err, data) => {
+      // if it does not exist, write counter set to 1
+      if (err) {
+        console.error(err);
+        return;
+      }
+      counter = data;
+      fs.writeFile('/counter.txt', data + 1);
+    });
+  }
+  catch {
+    fs.writeFile('/counter.txt', 1);
+    counter = 1;
+  }
+  console.log(counter);
+  return zeroPaddedNumber(counter);
+  */
+
